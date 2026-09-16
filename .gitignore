@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+backend/data/
+
+# Flutter / Android generated outputs
+mobile/.dart_tool/
+mobile/build/
+mobile/.idea/
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/ios/Flutter/ephemeral/
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Flutter/flutter_export_environment.sh
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
