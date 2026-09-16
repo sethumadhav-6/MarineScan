@@ -9,6 +9,8 @@ from .aruco import inspect_image
 from .schemas import CaptureSession, CaptureSessionCreate, ImageQuality
 
 app = FastAPI(title="MarineScan Processing API", version="0.1.0")
+# Vercel's filesystem is temporary. Use object storage (S3/R2/Supabase Storage)
+# before treating this prototype as a production capture archive.
 storage_root = Path("data/captures")
 sessions: dict[str, CaptureSession] = {}
 web_root = Path(__file__).parent / "web"

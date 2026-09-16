@@ -23,6 +23,12 @@ uvicorn app.main:app --reload
 
 Open `http://127.0.0.1:8000` for the browser-based capture app, or `http://127.0.0.1:8000/docs` for the API documentation. To use a phone camera, open the computer's LAN IP (for example, `http://192.168.1.20:8000`) while both devices use the same Wi-Fi.
 
+## Deploy the prototype on Vercel
+
+Deploy the repository root, not `backend/app/web` alone. The root `vercel.json` routes the website and `/sessions` API to `api/index.py`, which imports the FastAPI app. In Vercel project settings, leave **Root Directory** blank (the repository root).
+
+This is suitable for interface testing and image validation demonstrations. Vercel functions have temporary local storage and in-memory sessions, so accepted images and sessions are not durable. Add a database and object storage before field use or production deployment.
+
 ## Calibration and field protocol
 
 1. Print the board at 100% scale on matte waterproof material and measure one marker with calipers.
