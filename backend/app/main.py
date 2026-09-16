@@ -1,9 +1,11 @@
 import os
+from io import BytesIO
 from pathlib import Path
 from uuid import uuid4
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from .aruco import inspect_image
@@ -47,6 +49,28 @@ def get_session(session_id: str) -> CaptureSession:
     if session is None:
         raise HTTPException(status_code=404, detail="Capture session not found.")
     return session
+
+
+@app.get("/sessions/{session_id}/export.zip")
+def export_session(session_id: str) -> StreamingResponse:
+    """Download the accepted original images for desktop photogrammetry."""
+    session = get_session(session_id)
+    image_dir = storage_root / session_id
+    image_paths = sorted(path for path in image_dir.glob("*") if path.is_file())
+    if not image_paths:
+        raise HTTPException(status_code=404, detail="No accepted images are available for export.")
+
+    archive = BytesIO()
+    with ZipFile(archive, "w", ZIP_DEFLATED) as zip_file:
+        for image_path in image_paths:
+            zip_file.write(image_path, arcname=image_path.name)
+    archive.seek(0)
+    filename = f"marinescan-{session.specimen_label.replace(' ', '-')}-{session_id[:8]}.zip"
+    return StreamingResponse(
+        archive,
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @app.post("/sessions/{session_id}/images", response_model=ImageQuality)

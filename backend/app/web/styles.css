@@ -16,6 +16,8 @@ button, .camera-button { display: inline-flex; justify-content: center; padding:
 button:hover, .camera-button:hover { background: #a8f4e8; }
 button:disabled { cursor: wait; opacity: .55; }
 .secondary { width: 100%; margin-top: 16px; background: #c9f2ed; }
+.outline { width: 100%; margin-top: 10px; color: #dff7f3; background: transparent; border: 1px solid #75dbd0; }
+.outline:hover { color: #062f32; background: #a8f4e8; }
 #photo-input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .session-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 #image-count { color: #75dbd0; font-weight: 800; }

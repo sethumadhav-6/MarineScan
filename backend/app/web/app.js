@@ -3,6 +3,7 @@ const captureCard = document.querySelector('#capture-card');
 const photoInput = document.querySelector('#photo-input');
 const preview = document.querySelector('#preview');
 const uploadButton = document.querySelector('#upload-button');
+const exportButton = document.querySelector('#export-button');
 const result = document.querySelector('#result');
 let session = null;
 
@@ -55,6 +56,7 @@ uploadButton.addEventListener('click', async () => {
     showResult(`${accepted ? 'Accepted' : 'Rejected'} — markers: ${quality.marker_ids.join(', ') || 'none'}; blur score: ${quality.blur_variance}; brightness: ${quality.mean_brightness}. ${reasons}`, accepted);
     if (accepted) {
       document.querySelector('#image-count').textContent = `${++session.image_count} accepted`;
+      exportButton.disabled = false;
       photoInput.value = '';
       preview.classList.add('hidden');
     }
@@ -64,6 +66,11 @@ uploadButton.addEventListener('click', async () => {
     uploadButton.disabled = false;
     uploadButton.textContent = 'Check and save image';
   }
+});
+
+exportButton.addEventListener('click', () => {
+  if (!session || session.image_count < 1) return;
+  window.location.assign(`/sessions/${session.id}/export.zip`);
 });
 
 function showResult(message, accepted) {

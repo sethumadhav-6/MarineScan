@@ -29,6 +29,8 @@ Deploy the repository root, not `backend/app/web` alone. Vercel detects the root
 
 This is suitable for interface testing and image validation demonstrations. Vercel functions have temporary local storage and in-memory sessions, so accepted images and sessions are not durable. Add a database and object storage before field use or production deployment.
 
+For prototype captures, use **Finish capture & download ZIP** immediately after taking accepted photos, then import the ZIP's original images into the desktop photogrammetry workflow. Do not rely on Vercel temporary storage as an archive.
+
 ## Calibration and field protocol
 
 1. Print the board at 100% scale on matte waterproof material and measure one marker with calipers.
