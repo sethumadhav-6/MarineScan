@@ -25,7 +25,7 @@ Open `http://127.0.0.1:8000` for the browser-based capture app, or `http://127.0
 
 ## Deploy the prototype on Vercel
 
-Deploy the repository root, not `backend/app/web` alone. The root `vercel.json` routes the website and `/sessions` API to `api/index.py`, which imports the FastAPI app. In Vercel project settings, leave **Root Directory** blank (the repository root).
+Deploy the repository root, not `backend/app/web` alone. Vercel detects the root `app.py`, which imports the FastAPI app and receives the original paths for the website and `/sessions` API. In Vercel project settings, leave **Root Directory** blank (the repository root).
 
 This is suitable for interface testing and image validation demonstrations. Vercel functions have temporary local storage and in-memory sessions, so accepted images and sessions are not durable. Add a database and object storage before field use or production deployment.
 
