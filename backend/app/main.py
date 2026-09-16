@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from uuid import uuid4
 
@@ -9,9 +10,14 @@ from .aruco import inspect_image
 from .schemas import CaptureSession, CaptureSessionCreate, ImageQuality
 
 app = FastAPI(title="MarineScan Processing API", version="0.1.0")
-# Vercel's filesystem is temporary. Use object storage (S3/R2/Supabase Storage)
-# before treating this prototype as a production capture archive.
-storage_root = Path("data/captures")
+# Vercel's deployed files are read-only. Its /tmp directory is writable but is
+# temporary, so this supports a prototype capture session only. Production must
+# use persistent object storage (S3/R2/Supabase Storage).
+storage_root = (
+    Path("/tmp/marinescan/captures")
+    if os.getenv("VERCEL")
+    else Path("data/captures")
+)
 sessions: dict[str, CaptureSession] = {}
 web_root = Path(__file__).parent / "web"
 app.mount("/assets", StaticFiles(directory=web_root), name="assets")
