@@ -10,7 +10,7 @@ h2 { margin-top: 0; }
 .card, .note { margin: 18px 0; padding: 24px; border: 1px solid #4d9f99; border-radius: 18px; background: rgba(4, 42, 45, .82); box-shadow: 0 16px 45px rgba(0,0,0,.2); }
 label { display: grid; gap: 8px; margin: 14px 0; color: #dff7f3; font-weight: 700; }
 label span { color: #94c4c0; font-size: .78rem; font-weight: 400; }
-input { width: 100%; padding: 12px; border: 1px solid #5eaaa4; border-radius: 9px; color: #062f32; font: inherit; }
+input, select { width: 100%; padding: 12px; border: 1px solid #5eaaa4; border-radius: 9px; color: #062f32; font: inherit; }
 .fields { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 button, .camera-button { display: inline-flex; justify-content: center; padding: 13px 18px; border: 0; border-radius: 10px; cursor: pointer; color: #002b2c; background: #78ddd2; font: inherit; font-weight: 800; }
 button:hover, .camera-button:hover { background: #a8f4e8; }
@@ -22,8 +22,12 @@ button:disabled { cursor: wait; opacity: .55; }
 .session-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 #image-count { color: #75dbd0; font-weight: 800; }
 .protocol { padding-left: 20px; line-height: 1.6; color: #c6e5e2; }
-#preview { display: block; max-width: 100%; max-height: 420px; margin: 16px auto 0; border-radius: 12px; }
-.result { margin-top: 16px; padding: 14px; border-radius: 10px; line-height: 1.45; }
+#preview, #camera-preview { display: block; width: 100%; max-height: 520px; margin: 16px auto 0; object-fit: cover; border-radius: 12px; background: #001d1f; }
+.camera-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.camera-controls .camera-button { margin: 0; grid-column: 1 / -1; }
+.overlap-panel { display: grid; gap: 4px; margin-top: 10px; padding: 12px; border-left: 4px solid #75dbd0; background: #083f41; border-radius: 6px; }
+.overlap-panel span { color: #c6e5e2; font-size: .88rem; }
+.result { white-space: pre-line; margin-top: 16px; padding: 14px; border-radius: 10px; line-height: 1.45; }
 .accepted { color: #d9fff5; background: #176a55; }
 .rejected { color: #ffdddd; background: #7a343a; }
 .note { color: #c6e5e2; line-height: 1.5; font-size: .9rem; }

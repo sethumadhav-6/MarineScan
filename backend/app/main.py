@@ -78,7 +78,7 @@ async def upload_image(session_id: str, image: UploadFile = File(...)) -> ImageQ
     session = get_session(session_id)
     payload = await image.read()
     try:
-        result = inspect_image(payload, session.marker_length_mm, set(session.expected_marker_ids))
+        result = inspect_image(payload, session.marker_length_mm, set(session.expected_marker_ids), session.aruco_dictionary)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
     if result.accepted:

@@ -6,6 +6,7 @@ import numpy as np
 
 @dataclass
 class ArucoResult:
+    aruco_dictionary: str | None
     marker_ids: list[int]
     blur_variance: float
     mean_brightness: float
@@ -15,7 +16,17 @@ class ArucoResult:
     reasons: list[str]
 
 
-def inspect_image(image_bytes: bytes, marker_length_mm: float, expected_ids: set[int]) -> ArucoResult:
+SUPPORTED_DICTIONARIES = (
+    "DICT_4X4_50", "DICT_4X4_100", "DICT_4X4_250", "DICT_4X4_1000",
+    "DICT_5X5_50", "DICT_5X5_100", "DICT_5X5_250", "DICT_5X5_1000",
+    "DICT_6X6_50", "DICT_6X6_100", "DICT_6X6_250", "DICT_6X6_1000",
+    "DICT_7X7_50", "DICT_7X7_100", "DICT_7X7_250", "DICT_7X7_1000",
+    "DICT_ARUCO_ORIGINAL", "DICT_APRILTAG_16h5", "DICT_APRILTAG_25h9",
+    "DICT_APRILTAG_36h10", "DICT_APRILTAG_36h11",
+)
+
+
+def inspect_image(image_bytes: bytes, marker_length_mm: float, expected_ids: set[int], aruco_dictionary: str = "AUTO") -> ArucoResult:
     raw = np.frombuffer(image_bytes, dtype=np.uint8)
     image = cv2.imdecode(raw, cv2.IMREAD_COLOR)
     if image is None:
@@ -24,9 +35,7 @@ def inspect_image(image_bytes: bytes, marker_length_mm: float, expected_ids: set
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blur = float(cv2.Laplacian(gray, cv2.CV_64F).var())
     brightness = float(gray.mean())
-    dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100)
-    detector = cv2.aruco.ArucoDetector(dictionary, cv2.aruco.DetectorParameters())
-    corners, ids, _ = detector.detectMarkers(gray)
+    dictionary_name, corners, ids = _detect_markers(gray, expected_ids, aruco_dictionary)
     marker_ids = [] if ids is None else [int(item) for item in ids.flatten()]
 
     reasons: list[str] = []
@@ -42,6 +51,7 @@ def inspect_image(image_bytes: bytes, marker_length_mm: float, expected_ids: set
 
     rvec, tvec = _estimate_first_pose(corners, marker_length_mm, image.shape)
     return ArucoResult(
+        aruco_dictionary=dictionary_name,
         marker_ids=marker_ids,
         blur_variance=round(blur, 2),
         mean_brightness=round(brightness, 2),
@@ -50,6 +60,25 @@ def inspect_image(image_bytes: bytes, marker_length_mm: float, expected_ids: set
         accepted=not reasons,
         reasons=reasons,
     )
+
+
+def _detect_markers(gray: np.ndarray, expected_ids: set[int], requested: str):
+    names = SUPPORTED_DICTIONARIES if requested == "AUTO" else (requested,)
+    candidates = []
+    parameters = cv2.aruco.DetectorParameters()
+    parameters.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
+    for name in names:
+        dictionary_id = getattr(cv2.aruco, name, None)
+        if dictionary_id is None:
+            continue
+        corners, ids, _ = cv2.aruco.ArucoDetector(cv2.aruco.getPredefinedDictionary(dictionary_id), parameters).detectMarkers(gray)
+        detected_ids = set() if ids is None else {int(item) for item in ids.flatten()}
+        # Prefer detections containing a requested marker; then prefer more markers.
+        candidates.append((len(detected_ids & expected_ids), len(detected_ids), name, corners, ids))
+    if not candidates:
+        return None, [], None
+    _, _, name, corners, ids = max(candidates, key=lambda candidate: (candidate[0], candidate[1]))
+    return name if ids is not None else None, corners, ids
 
 
 def _estimate_first_pose(corners: list[np.ndarray], marker_length_mm: float, shape: tuple[int, ...]):

@@ -23,6 +23,7 @@
             <label>Marker side (mm)<input id="marker-length" type="number" value="50" min="2" max="1000" step="0.1" required /></label>
             <label>Required ArUco ID(s)<input id="marker-ids" value="0" inputmode="numeric" required /><span>Separate multiple IDs with commas.</span></label>
           </div>
+          <label>Marker dictionary<select id="aruco-dictionary"><option value="AUTO">Auto-detect ArUco / AprilTag (recommended)</option><option value="DICT_4X4_100">ArUco 4×4, 100 markers</option><option value="DICT_4X4_50">ArUco 4×4, 50 markers</option><option value="DICT_5X5_100">ArUco 5×5, 100 markers</option><option value="DICT_6X6_250">ArUco 6×6, 250 markers</option><option value="DICT_APRILTAG_36h11">AprilTag 36h11</option></select></label>
           <button type="submit">Create session</button>
         </form>
       </section>
@@ -34,8 +35,16 @@
           <li>Move around a still specimen with 70–80% overlap between frames.</li>
           <li>Use diffuse light; reject glare and blurred frames.</li>
         </ol>
-        <label class="camera-button" for="photo-input">Take / choose photo</label>
-        <input id="photo-input" type="file" accept="image/*" capture="environment" />
+        <div class="camera-controls">
+          <button id="start-camera" type="button">Use live camera</button>
+          <button id="capture-frame" class="secondary hidden" type="button">Capture next frame</button>
+          <label class="camera-button" for="photo-input">Take / add photo files</label>
+        </div>
+        <input id="photo-input" type="file" accept="image/*" capture="environment" multiple />
+        <div id="live-camera" class="hidden">
+          <video id="camera-preview" autoplay muted playsinline></video>
+          <div class="overlap-panel"><strong id="overlap-value">Capture the first frame</strong><span id="overlap-note">The guide compares the live view with the last accepted frame.</span></div>
+        </div>
         <img id="preview" class="hidden" alt="Selected capture preview" />
         <button id="upload-button" class="secondary" disabled>Check and save image</button>
         <button id="export-button" class="outline" type="button" disabled>Finish capture &amp; download ZIP</button>
@@ -43,7 +52,7 @@
       </section>
 
       <section class="note">
-        <strong>Phone use:</strong> open this page using your computer's LAN address, for example <code>http://192.168.1.20:8000</code>, while phone and computer are on the same Wi-Fi. If browser camera permission is blocked on a non-HTTPS address, the photo picker still opens the phone camera.
+        <strong>Phone use:</strong> live camera requires HTTPS, so it works on the Vercel URL. The estimated overlap is a visual guide, not a calibrated geometric overlap measurement; retain 70–80% of the specimen in the next view and keep the marker visible.
       </section>
     </main>
     <script src="/assets/app.js"></script>
